@@ -1,0 +1,39 @@
+{
+  "productList": [
+    {
+      "id": "1",
+      "name": "Product1",
+      "manufactureDate": "09-02-2020",
+      "expiryDate": "09-02-2021",
+      "validProduct": true
+    },
+    {
+      "id": "2",
+      "name": "Product2",
+      "manufactureDate": "09-02-2020",
+      "expiryDate": "09-02-2021",
+      "validProduct": true
+    },
+    {
+      "id": "3",
+      "name": "Product3",
+      "manufactureDate": "09-02-2020",
+      "expiryDate": "09-02-2021",
+      "validProduct": false
+    },
+    {
+      "id": "4",
+      "name": "Product4",
+      "manufactureDate": "09-02-2020",
+      "expiryDate": "09-02-2021",
+      "validProduct": false
+    },
+    {
+      "id": "5",
+      "name": "Product5",
+      "manufactureDate": "09-02-2020",
+      "expiryDate": "09-02-2021",
+      "validProduct": false
+    }
+  ]
+}

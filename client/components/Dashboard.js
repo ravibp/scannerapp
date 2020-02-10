@@ -9,6 +9,7 @@ import {
   TextInput
 } from "react-native";
 import axios from "axios";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default class Dashboard extends Component {
   state = {
@@ -26,19 +27,22 @@ export default class Dashboard extends Component {
     this.setState({
       scanned: true
     });
-    let productDetails = JSON.parse(data).productDetails;
-    console.log("productDetails", productDetails);
-
-    let productID = productDetails.id ? productDetails.id : null;
-    this.handleProductVerification(productID);
+    console.log("error line???", data);
+    try {
+      let productDetails = JSON.parse(data).productDetails;
+      let productID = productDetails.id ? productDetails.id : null;
+      this.handleProductVerification(productID);
+    } catch {
+      this.handleProductVerification(null);
+    }
   };
   handleProductVerification = productID => {
-    console.log("api calling");
     axios
-      // .get("https://jsonplaceholder.typicode.com/todos/1")
       .get(`http://192.168.2.102:5000/product/${productID}`)
       .then(res => {
-        if (res.data.valid) {
+        console.log("response", res);
+
+        if (res.data.validProduct) {
           return alert(`
             Product is Valid.
             Product Details: 
@@ -52,9 +56,14 @@ export default class Dashboard extends Component {
         return alert("Product is Invalid");
       });
   };
-  handleInputChange = e => {
+  handleInputChange = productID => {
     this.setState({
-      [e.target.name]: e.target.value
+      productID
+    });
+  };
+  handleBackPress = () => {
+    this.setState({
+      hasPermission: false
     });
   };
   showBarCodeScanner = async () => {
@@ -65,7 +74,7 @@ export default class Dashboard extends Component {
     }
   };
   render() {
-    let { hasPermission, scanned, status } = this.state;
+    let { hasPermission, scanned } = this.state;
     // if (hasPermission === null) {
     //   return <Text>Requesting for camera permission</Text>;
     // }
@@ -79,6 +88,12 @@ export default class Dashboard extends Component {
             onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
             style={StyleSheet.absoluteFillObject}
           />
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => this.handleBackPress(this.state.productID)}
+          >
+            <Ionicons name="ios-arrow-round-back" size={38} color="white" />
+          </TouchableOpacity>
           {scanned && (
             <Button
               title={"Tap to Scan Again"}
@@ -93,12 +108,12 @@ export default class Dashboard extends Component {
       );
     }
     return (
-      <View>
-        <Text>Scanner App</Text>
-        <View>
+      <View style={styles.dashboard}>
+        <Text style={styles.title}>Scanner App</Text>
+        <View style={styles.textBoxContainer}>
           <Text>Enter Product Id:</Text>
           <TextInput
-            style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+            style={styles.inputText}
             onChangeText={this.handleInputChange}
             name="productID"
             value={this.state.productID}
@@ -109,9 +124,15 @@ export default class Dashboard extends Component {
             <Text style={styles.button}>Verify Product</Text>
           </TouchableOpacity>
         </View>
+        <Text style={{ textAlign: "center", marginBottom: 20 }}>OR</Text>
         <View>
+          <Text style={{ marginBottom: 10 }}>Scan Product's Barcode:</Text>
           <TouchableOpacity onPress={this.showBarCodeScanner}>
-            <Text style={styles.button}>Scan Barcode</Text>
+            <MaterialCommunityIcons
+              name="qrcode-scan"
+              size={50}
+              color="black"
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -120,9 +141,33 @@ export default class Dashboard extends Component {
 }
 
 const styles = StyleSheet.create({
+  dashboard: {},
+  title: {
+    fontWeight: "bold",
+    fontSize: 30,
+    marginBottom: 10
+  },
+  textBoxContainer: {
+    marginVertical: 40
+  },
   button: {
     alignItems: "center",
-    backgroundColor: "#DDDDDD",
-    padding: 10
+    backgroundColor: "#004ced",
+    padding: 10,
+    color: "white",
+    fontWeight: "bold",
+    margin: 5
+  },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20
+  },
+  inputText: {
+    height: 30,
+    borderColor: "gray",
+    borderWidth: 1,
+    padding: 5,
+    marginVertical: 10
   }
 });
