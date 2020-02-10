@@ -1,11 +1,31 @@
-var express = require("express");
-var bodyParser = require("body-parser");
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require('cors');
 
 const app = express();
-const PORT = 3000;
+const PORT = 5000;
+
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.listen(PORT, () => console.log(`Server started at port ${PORT}`));
 
 app.get("/", (req, res) => {
   res.send("Server is running.");
 });
+app.get("/product/:id", (req, res) => {
+  let id = parseInt(req.params.id);
 
-app.listen(PORT, () => console.log(`Server started at port ${PORT}`));
+  if (id === 1) {
+    res.status(200).json({
+      id,
+      valid: true
+    });
+  } else {
+    res.status(200).json({
+      id,
+      valid: false
+    });
+  }
+});

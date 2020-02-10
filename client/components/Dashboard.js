@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput
 } from "react-native";
+import axios from "axios";
 
 export default class Dashboard extends Component {
   state = {
@@ -25,13 +26,31 @@ export default class Dashboard extends Component {
     this.setState({
       scanned: true
     });
-    this.handleProductVerification();
-    alert(`Bar code with type '${type}', and data '${data}' has been scanned!`);
-    console.log("bar code type", type);
-    console.log("bar code data", data);
+    let productDetails = JSON.parse(data).productDetails;
+    console.log("productDetails", productDetails);
+
+    let productID = productDetails.id ? productDetails.id : null;
+    this.handleProductVerification(productID);
   };
-  handleProductVerification = () => {
-    alert("TODO: call verification API.");
+  handleProductVerification = productID => {
+    console.log("api calling");
+    axios
+      // .get("https://jsonplaceholder.typicode.com/todos/1")
+      .get(`http://192.168.2.102:5000/product/${productID}`)
+      .then(res => {
+        if (res.data.valid) {
+          return alert(`
+            Product is Valid.
+            Product Details: 
+            ${JSON.stringify(res.data)}
+          `);
+        }
+        return alert("Product is Invalid");
+      })
+      .catch(error => {
+        console.log("Error", error);
+        return alert("Product is Invalid");
+      });
   };
   handleInputChange = e => {
     this.setState({
@@ -84,7 +103,9 @@ export default class Dashboard extends Component {
             name="productID"
             value={this.state.productID}
           />
-          <TouchableOpacity onPress={this.handleProductVerification}>
+          <TouchableOpacity
+            onPress={() => this.handleProductVerification(this.state.productID)}
+          >
             <Text style={styles.button}>Verify Product</Text>
           </TouchableOpacity>
         </View>
